@@ -81,7 +81,7 @@ const ResetPassword = ({ token, email }) => {
         </div>
       </form>
     </AuthenticationCard>
-  </>
+  </>;
 };
 
 export default ResetPassword;

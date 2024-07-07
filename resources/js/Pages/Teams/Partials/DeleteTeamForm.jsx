@@ -12,7 +12,6 @@ const DeleteTeamForm = ({ team }) => {
     delete:
       destroy,
       processing,
-      reset
   } = useForm({});
 
   const confirmTeamDeletion = () => setConfirmingTeamDeletion(true);

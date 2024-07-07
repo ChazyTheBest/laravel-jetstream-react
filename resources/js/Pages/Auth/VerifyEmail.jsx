@@ -55,7 +55,7 @@ const VerifyEmail = ({ status }) => {
         </div>
       </form>
     </AuthenticationCard>
-  </>
+  </>;
 };
 
 export default VerifyEmail;
