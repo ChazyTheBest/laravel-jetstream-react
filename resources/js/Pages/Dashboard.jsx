@@ -1,5 +1,5 @@
 import AppLayout from '@/Layouts/AppLayout';
-import PageHeader from "@/Components/PageHeader.jsx";
+import PageHeader from "@/Components/PageHeader";
 import Welcome from '@/Components/Welcome';
 
 const pageTitle = 'Dashboard';

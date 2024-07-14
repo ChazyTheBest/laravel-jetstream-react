@@ -23,6 +23,8 @@ const TwoFactorChallenge = () => {
     recovery_code: '',
   });
 
+  const handleOnChange = e => setData(e.target.id, e.target.value);
+
   const toggleRecovery = () => {
     setRecovery(!recovery);
     setTimeout(() => {
@@ -36,7 +38,7 @@ const TwoFactorChallenge = () => {
     }, 0);
   };
 
-  const submit = (e) => {
+  const submit = e => {
     e.preventDefault();
     post(route('two-factor.login'));
   };
@@ -44,7 +46,7 @@ const TwoFactorChallenge = () => {
   return <>
     <Head title="Two-factor Confirmation" />
 
-    <AuthenticationCard logo={<AuthenticationCardLogo/>}>
+    <AuthenticationCard logo={<AuthenticationCardLogo />}>
       <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
         {recovery
           ? 'Please confirm access to your account by entering one of your emergency recovery codes.'
@@ -52,37 +54,36 @@ const TwoFactorChallenge = () => {
       </div>
 
       <form onSubmit={submit}>
-        {recovery
-          ?
-            <>
-              <InputLabel htmlFor="recovery_code" value="Recovery Code" />
-              <TextInput
-                id="recovery_code"
-                ref={recoveryCodeInput}
-                value={data.recovery_code}
-                onChange={(e) => setData('recovery_code', e.target.value)}
-                type="text"
-                className="mt-1 block w-full"
-                autoComplete="one-time-code"
-              />
-              <InputError className="mt-2" message={errors.recovery_code} />
-            </>
-          :
-            <>
-              <InputLabel htmlFor="code" value="Code" />
-              <TextInput
-                id="code"
-                ref={codeInput}
-                value={data.code}
-                onChange={(e) => setData('code', e.target.value)}
-                type="text"
-                inputMode="numeric"
-                className="mt-1 block w-full"
-                autoFocus
-                autoComplete="one-time-code"
-              />
-              <InputError className="mt-2" message={errors.code} />
-            </>
+        {recovery ?
+          <>
+            <InputLabel htmlFor="recovery_code" value="Recovery Code" />
+            <TextInput
+              id="recovery_code"
+              ref={recoveryCodeInput}
+              value={data.recovery_code}
+              onChange={handleOnChange}
+              type="text"
+              className="mt-1 block w-full"
+              autoComplete="one-time-code"
+            />
+            <InputError className="mt-2" message={errors.recovery_code} />
+          </>
+        :
+          <>
+            <InputLabel htmlFor="code" value="Code" />
+            <TextInput
+              id="code"
+              ref={codeInput}
+              value={data.code}
+              onChange={handleOnChange}
+              type="text"
+              inputMode="numeric"
+              className="mt-1 block w-full"
+              autoFocus
+              autoComplete="one-time-code"
+            />
+            <InputError className="mt-2" message={errors.code} />
+          </>
         }
 
         <div className="flex items-center justify-end mt-4">

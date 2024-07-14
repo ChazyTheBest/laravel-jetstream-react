@@ -21,7 +21,10 @@ const Login = ({ canResetPassword, status }) => {
     remember: false,
   });
 
-  const submit = (e) => {
+  const handleOnChange = e => setData(e.target.id, e.target.value);
+  const handleCheckboxOnChange = () => isChecked => setData('remember', isChecked ? 'on' : false);
+
+  const submit = e => {
     e.preventDefault();
     post(route('login'), {
       onFinish: () => reset('password'),
@@ -43,12 +46,12 @@ const Login = ({ canResetPassword, status }) => {
         <TextInput
           id="email"
           value={data.email}
+          onChange={handleOnChange}
           type="email"
           className="mt-1 block w-full"
           required
           autoFocus
           autoComplete="username"
-          onChange={(e) => setData('email', e.target.value)}
         />
         <InputError className="mt-2" message={errors.email} />
 
@@ -57,11 +60,11 @@ const Login = ({ canResetPassword, status }) => {
           <TextInput
             id="password"
             value={data.password}
+            onChange={handleOnChange}
             type="password"
             className="mt-1 block w-full"
             required
             autoComplete="current-password"
-            onChange={(e) => setData('password', e.target.value)}
           />
           <InputError className="mt-2" message={errors.password} />
         </div>
@@ -70,21 +73,21 @@ const Login = ({ canResetPassword, status }) => {
           <label className="flex items-center">
             <Checkbox
               checked={data.remember}
-              onChange={(e) => setData('remember', e.target.checked ? 'on' : false)}
+              onChange={handleCheckboxOnChange}
             />
             <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">Remember me</span>
           </label>
         </div>
 
         <div className="flex items-center justify-end mt-4">
-          {canResetPassword && (
+          {canResetPassword &&
             <Link
               href={route('password.request')}
               className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
             >
               Forgot your password?
             </Link>
-          )}
+          }
 
           <PrimaryButton className="ms-4" disabled={processing}>
             Log in

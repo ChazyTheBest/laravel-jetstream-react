@@ -8,15 +8,15 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
-    resolve: (name) => {
-      console.log('app component resolved');
-      return resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'))
-    },
-    setup({ el, App, props }) {console.log('App rendered');
+    title: title => `${title} - ${appName}`,
+    resolve: name => resolvePageComponent(
+      `./Pages/${name}.jsx`,
+      import.meta.glob('./Pages/**/*.jsx')
+    ),
+    setup({ el, App, props }) {
         if (import.meta.env.DEV) {
             createRoot(el).render(<App {...props} />);
-            return
+            return;
         }
 
         hydrateRoot(el, <App {...props} />);

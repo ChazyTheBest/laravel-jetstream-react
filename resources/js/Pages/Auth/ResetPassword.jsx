@@ -21,7 +21,9 @@ const ResetPassword = ({ token, email }) => {
     password_confirmation: '',
   });
 
-  const submit = (e) => {
+  const handleOnChange = e => setData(e.target.id, e.target.value);
+
+  const submit = e => {
     e.preventDefault();
     post(route('password.update'), {
       onFinish: () => reset('password', 'password_confirmation'),
@@ -37,12 +39,12 @@ const ResetPassword = ({ token, email }) => {
         <TextInput
           id="email"
           value={data.email}
+          onChange={handleOnChange}
           type="email"
           className="mt-1 block w-full"
           required
           autoFocus
           autoComplete="username"
-          onChange={(e) => setData('email', e.target.value)}
         />
         <InputError className="mt-2" message={errors.email} />
 
@@ -51,11 +53,11 @@ const ResetPassword = ({ token, email }) => {
           <TextInput
             id="password"
             value={data.password}
+            onChange={handleOnChange}
             type="password"
             className="mt-1 block w-full"
             required
             autoComplete="new-password"
-            onChange={(e) => setData('password', e.target.value)}
           />
           <InputError className="mt-2" message={errors.password} />
         </div>
@@ -65,11 +67,11 @@ const ResetPassword = ({ token, email }) => {
           <TextInput
             id="password_confirmation"
             value={data.password_confirmation}
+            onChange={handleOnChange}
             type="password"
             className="mt-1 block w-full"
             required
             autoComplete="new-password"
-            onChange={(e) => setData('password_confirmation', e.target.value)}
           />
           <InputError className="mt-2" message={errors.password_confirmation} />
         </div>

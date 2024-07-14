@@ -4,27 +4,32 @@ import { Transition } from "@headlessui/react";
 const Modal = ({ closeable = true, onClose, show, maxWidth = '2xl', children }) => {
   const dialogRef = useRef(null);
 
-  const handleClose = () => closeable && onClose();
+  const close = () => closeable && onClose();
 
-  const handleEscape = (e) => e.key === 'Escape' && show && handleClose();
+  const closeOnEscape = e => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+
+      show && close();
+    }
+  };
 
   useEffect(() => {
-    if (show) {
+    const dialog = dialogRef.current;
+
+    if (show && dialog) {
       document.body.style.overflow = 'hidden';
-      dialogRef.current.showModal();
-    } else {
-      document.body.style.overflow = null;
-      setTimeout(() => {
-        dialogRef.current.close();
-      }, 200);
+      dialog.showModal();
+      dialog.addEventListener('keydown', closeOnEscape);
+
+      return () => {
+        document.body.style.overflow = null;
+        setTimeout(() => {
+          dialog?.close();
+        }, 250);
+        dialog.removeEventListener('keydown', closeOnEscape);
+      };
     }
-
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = null;
-    };
   }, [show]);
 
   const maxWidthClass = {
@@ -51,7 +56,7 @@ const Modal = ({ closeable = true, onClose, show, maxWidth = '2xl', children }) 
       >
         <div
           className="fixed inset-0 transform transition-all ease-out duration-300"
-          onClick={handleClose}
+          onClick={close}
         >
           <div className="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75" />
         </div>

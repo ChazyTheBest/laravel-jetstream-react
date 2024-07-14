@@ -10,7 +10,7 @@ const VerifyEmail = ({ status }) => {
     processing
   } = useForm({});
 
-  const submit = (e) => {
+  const submit = e => {
     e.preventDefault();
     post(route('verification.send'));
   };

@@ -8,6 +8,8 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 
 const ConfirmPassword = () => {
+  const passwordInput = useRef();
+
   const {
     data,
     setData,
@@ -19,9 +21,9 @@ const ConfirmPassword = () => {
     password: '',
   });
 
-  const passwordInput = useRef();
+  const handleOnChange = e => setData('password', e.target.value);
 
-  const submit = (e) => {
+  const submit = e => {
     e.preventDefault();
     post(route('password.confirm'), {
       onFinish: () => {
@@ -45,12 +47,12 @@ const ConfirmPassword = () => {
           id="password"
           ref={passwordInput}
           value={data.password}
+          onChange={handleOnChange}
           type="password"
           className="mt-1 block w-full"
           required
           autoComplete="current-password"
           autoFocus
-          onChange={(e) => setData('password', e.target.value)}
         />
         <InputError className="mt-2" message={errors.password} />
 

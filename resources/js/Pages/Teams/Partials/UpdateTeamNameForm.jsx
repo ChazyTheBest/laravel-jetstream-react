@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import ActionMessage from "@/Components/ActionMessage.jsx";
+import ActionMessage from "@/Components/ActionMessage";
 import FormSection from '@/Components/FormSection';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -18,7 +18,9 @@ const UpdateTeamNameForm = ({ team, permissions }) => {
     name: team.name,
   });
 
-  const updateTeamName = (e) => {
+  const handleOnChange = e => setData(e.target.id, e.target.value);
+
+  const updateTeamName = e => {
     e.preventDefault();
     put(route('teams.update', team), {
       errorBag: 'updateTeamName',
@@ -55,21 +57,21 @@ const UpdateTeamNameForm = ({ team, permissions }) => {
         <TextInput
           id="name"
           value={data.name}
-          onChange={(e) => setData('name', e.target.value)}
+          onChange={handleOnChange}
           type="text"
           className="block w-full mt-1"
           disabled={!permissions.canUpdateTeam}
         />
 
-        <InputError message={errors.name} className="mt-2"/>
+        <InputError message={errors.name} className="mt-2" />
       </div>
     </>}
     actions={<>
-      <ActionMessage on={recentlySuccessful} class="me-3">
+      <ActionMessage on={recentlySuccessful} className="me-3">
         Saved.
       </ActionMessage>
 
-      <PrimaryButton className={processing ? 'opacity-25' : ''} disabled={processing}>
+      <PrimaryButton disabled={processing}>
         Save
       </PrimaryButton>
     </>}

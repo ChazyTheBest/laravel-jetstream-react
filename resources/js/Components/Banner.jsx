@@ -1,3 +1,4 @@
+import { CheckCircleIcon, ExclamationTriangleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 
@@ -20,34 +21,8 @@ const Banner = () => {
           <div className="w-0 flex-1 flex items-center min-w-0">
             <span className={`flex p-2 rounded-lg ${style === 'success' ? 'bg-indigo-600' : 'bg-red-600'}`}>
               {style === 'success'
-                ? <svg
-                  className="h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                : <svg
-                  className="h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                  />
-                </svg>
+                ? <CheckCircleIcon className="size-5 text-white" />
+                : <ExclamationTriangleIcon className="size-5 text-white" />
               }
             </span>
 
@@ -66,20 +41,7 @@ const Banner = () => {
               aria-label="Dismiss"
               onClick={() => setShow(false)}
             >
-              <svg
-                className="h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <XMarkIcon className="size-5 text-white" />
             </button>
           </div>
         </div>

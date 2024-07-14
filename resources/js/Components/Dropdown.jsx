@@ -1,11 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import {Transition} from "@headlessui/react";
+import { cloneElement, useEffect, useState } from 'react';
+import { Transition } from "@headlessui/react";
 
-const Dropdown = ({ width = '48', align = 'right', contentClasses = ['py-1', 'bg-white dark:bg-gray-700'], trigger, children }) => {
+const Dropdown = ({
+  width = '48',
+  align = 'right',
+  className = '',
+  contentClasses = 'py-1 bg-white dark:bg-gray-700',
+  trigger,
+  children
+}) => {
   const [open, setOpen] = useState(false);
-  const ref = useRef();
 
-  const closeOnEscape = (e) => {
+  const closeOnEscape = e => {
     if (open && e.key === 'Escape') {
       setOpen(false);
     }
@@ -18,7 +24,14 @@ const Dropdown = ({ width = '48', align = 'right', contentClasses = ['py-1', 'bg
     };
   }, [open]);
 
+  const toggleDropdown = () => setOpen(!open);
+  const triggerWithToggle = cloneElement(trigger, { onClick: toggleDropdown });
+
+  const closeOnClick = () => setOpen(false);
+
   const widthClass = {
+    '28': 'w-28',
+    '32': 'w-32',
     '48': 'w-48',
     '60': 'w-60'
   }[width.toString()];
@@ -28,13 +41,11 @@ const Dropdown = ({ width = '48', align = 'right', contentClasses = ['py-1', 'bg
     right: 'ltr:origin-top-right rtl:origin-top-left end-0',
   }[align] || 'origin-top';
 
-  return <div className="relative" ref={ref}>
-    <div onClick={() => setOpen(!open)}>
-      {trigger}
-    </div>
+  return <div className={`relative ${className}`}>
+    {triggerWithToggle}
 
-    {/*<!-- Full Screen Dropdown Overlay -->*/}
-    {open && <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />}
+    {/* Full Screen Dropdown Overlay */}
+    {open && <div className="fixed inset-0 z-40" onClick={closeOnClick} />}
 
     <Transition
       show={open}
@@ -47,9 +58,9 @@ const Dropdown = ({ width = '48', align = 'right', contentClasses = ['py-1', 'bg
     >
       <div
         className={`absolute z-50 mt-2 rounded-md shadow-lg ${widthClass} ${alignmentClasses}`}
-        onClick={() => setOpen(false)}
+        onClick={closeOnClick}
       >
-        <div className={`rounded-md ring-1 ring-black ring-opacity-5 ${contentClasses.join(' ')}`}>
+        <div className={`rounded-md ring-1 ring-black ring-opacity-5 ${contentClasses}`}>
           {children}
         </div>
       </div>

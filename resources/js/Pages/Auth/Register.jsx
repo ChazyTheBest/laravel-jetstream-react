@@ -7,7 +7,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 
-const Register = (props) => {
+const Register = props => {
   const {
     data,
     setData,
@@ -23,7 +23,10 @@ const Register = (props) => {
     terms: false,
   });
 
-  const submit = (e) => {
+  const handleOnChange = e => setData(e.target.id, e.target.value);
+  const handleOnChangeCheckbox = () => isChecked => setData('terms', isChecked ? 'on' : false);
+
+  const submit = e => {
     e.preventDefault();
     post(route('register'), {
       onFinish: () => reset('password', 'password_confirmation'),
@@ -39,12 +42,12 @@ const Register = (props) => {
         <TextInput
           id="name"
           value={data.name}
+          onChange={handleOnChange}
           type="text"
           className="mt-1 block w-full"
           required
           autoFocus
           autoComplete="name"
-          onChange={(e) => setData('name', e.target.value)}
         />
         <InputError className="mt-2" message={errors.name} />
 
@@ -53,11 +56,11 @@ const Register = (props) => {
           <TextInput
             id="email"
             value={data.email}
+            onChange={handleOnChange}
             type="email"
             className="mt-1 block w-full"
             required
             autoComplete="username"
-            onChange={(e) => setData('email', e.target.value)}
           />
           <InputError className="mt-2" message={errors.email} />
         </div>
@@ -67,11 +70,11 @@ const Register = (props) => {
           <TextInput
             id="password"
             value={data.password}
+            onChange={handleOnChange}
             type="password"
             className="mt-1 block w-full"
             required
             autoComplete="new-password"
-            onChange={(e) => setData('password', e.target.value)}
           />
           <InputError className="mt-2" message={errors.password} />
         </div>
@@ -81,11 +84,11 @@ const Register = (props) => {
           <TextInput
             id="password_confirmation"
             value={data.password_confirmation}
+            onChange={handleOnChange}
             type="password"
             className="mt-1 block w-full"
             required
             autoComplete="new-password"
-            onChange={(e) => setData('password_confirmation', e.target.value)}
           />
           <InputError className="mt-2" message={errors.password_confirmation} />
         </div>
@@ -97,7 +100,7 @@ const Register = (props) => {
                 <Checkbox
                   id="terms"
                   checked={data.terms}
-                  onChange={(checked) => setData('terms', checked ? 'on' : false)}
+                  onChange={handleOnChangeCheckbox}
                   required
                 />
                 <div className="ms-2">
@@ -119,7 +122,7 @@ const Register = (props) => {
                   </a>
                 </div>
               </div>
-              <InputError class="mt-2" message={errors.terms} />
+              <InputError className="mt-2" message={errors.terms} />
             </InputLabel>
           </div>
         }

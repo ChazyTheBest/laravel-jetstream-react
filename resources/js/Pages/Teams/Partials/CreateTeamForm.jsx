@@ -6,6 +6,8 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 
 const CreateTeamForm = () => {
+  const { auth } = usePage().props;
+
   const {
     data,
     setData,
@@ -16,7 +18,9 @@ const CreateTeamForm = () => {
     name: '',
   });
 
-  const createTeam = (e) => {
+  const handleOnChange = e => setData(e.target.id, e.target.value);
+
+  const createTeam = e => {
     e.preventDefault();
     post(route('teams.store'), {
       errorBag: 'createTeam',
@@ -24,14 +28,12 @@ const CreateTeamForm = () => {
     });
   };
 
-  const { auth } = usePage().props;
-
   return <FormSection
     title="Team Details"
     description="Create a new team to collaborate with others on projects."
     form={<>
       <div className="col-span-6">
-        <InputLabel value="Team Owner"/>
+        <InputLabel value="Team Owner" />
 
         <div className="flex items-center mt-2">
           <img
@@ -52,7 +54,7 @@ const CreateTeamForm = () => {
         <TextInput
           id="name"
           value={data.name}
-          onChange={(e) => setData('name', e.target.value)}
+          onChange={handleOnChange}
           type="text"
           className="block w-full mt-1"
           autoFocus

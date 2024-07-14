@@ -20,12 +20,10 @@ const UpdateProfileInformationForm = ({ user, jetstream }) => {
     photo: null,
   });
 
-  const updateProfileInformation = (e) => {
-    e.preventDefault();
+  const handleOnChange = e => form.setData(e.target.id, e.target.value);
 
-    if (photoInput.current) {
-      form.setData('photo', photoInput.current.files[0]);
-    }
+  const updateProfileInformation = e => {
+    e.preventDefault();
 
     form.post(route('user-profile-information.update'), {
       errorBag: 'updateProfileInformation',
@@ -44,9 +42,11 @@ const UpdateProfileInformationForm = ({ user, jetstream }) => {
     if (!photo) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => setPhotoPreview(e.target.result);
+    reader.onload = e => setPhotoPreview(e.target.result);
 
     reader.readAsDataURL(photo);
+
+    form.setData('photo', photo);
   };
 
   const deletePhoto = () => {
@@ -84,14 +84,13 @@ const UpdateProfileInformationForm = ({ user, jetstream }) => {
           <InputLabel htmlFor="photo" value="Photo" />
 
           <div className="mt-2">
-            {photoPreview
-              ?
-                <span
-                  className="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center"
-                  style={{ backgroundImage: `url(${photoPreview})` }}
-                />
-              :
-                <img src={user.profile_photo_url} alt={user.name} className="rounded-full h-20 w-20 object-cover" />
+            {photoPreview ?
+              <span
+                className="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center"
+                style={{ backgroundImage: `url(${photoPreview})` }}
+              />
+            :
+              <img src={user.profile_photo_url} alt={user.name} className="rounded-full h-20 w-20 object-cover" />
             }
           </div>
 
@@ -115,7 +114,7 @@ const UpdateProfileInformationForm = ({ user, jetstream }) => {
         <TextInput
           id="name"
           value={form.data.name}
-          onChange={e => form.setData('name', e.target.value)}
+          onChange={handleOnChange}
           type="text"
           className="mt-1 block w-full"
           required
@@ -130,7 +129,7 @@ const UpdateProfileInformationForm = ({ user, jetstream }) => {
         <TextInput
           id="email"
           value={form.data.email}
-          onChange={e => form.setData('email', e.target.value)}
+          onChange={handleOnChange}
           type="email"
           className="mt-1 block w-full"
           required
@@ -145,6 +144,7 @@ const UpdateProfileInformationForm = ({ user, jetstream }) => {
                 href={route('verification.send')}
                 method="post"
                 as="button"
+                type="button"
                 className="ms-1 underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 onClick={sendEmailVerification}
               >

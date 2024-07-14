@@ -1,6 +1,6 @@
 import AppLayout from '@/Layouts/AppLayout';
 import DeleteTeamForm from '@/Pages/Teams/Partials/DeleteTeamForm';
-import PageHeader from "@/Components/PageHeader.jsx";
+import PageHeader from "@/Components/PageHeader";
 import SectionBorder from '@/Components/SectionBorder';
 import TeamMemberManager from '@/Pages/Teams/Partials/TeamMemberManager';
 import UpdateTeamNameForm from '@/Pages/Teams/Partials/UpdateTeamNameForm';

@@ -1,6 +1,6 @@
 import AppLayout from '@/Layouts/AppLayout';
 import CreateTeamForm from '@/Pages/Teams/Partials/CreateTeamForm';
-import PageHeader from "@/Components/PageHeader.jsx";
+import PageHeader from "@/Components/PageHeader";
 
 const pageTitle = 'Create Team';
 const pageHeader = <PageHeader title={pageTitle} />;

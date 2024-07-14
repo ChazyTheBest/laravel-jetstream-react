@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { router, useForm } from '@inertiajs/react';
 import ActionSection from '@/Components/ActionSection';
-import ConfirmsPassword from '@/Components/ConfirmsPassword';
+import withPasswordConfirmation from '@/HOC/withPasswordConfirmation';
 import DangerButton from '@/Components/DangerButton';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -11,11 +11,14 @@ import TextInput from '@/Components/TextInput';
 
 const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
   const [ enabling, setEnabling ] = useState(false);
+  const [ confirmationRequired, setConfirmationRequired ] = useState(false);
   const [ confirming, setConfirming ] = useState(false);
   const [ disabling, setDisabling ] = useState(false);
   const [ qrCode, setQrCode ] = useState(null);
   const [ setupKey, setSetupKey ] = useState(null);
+  const [ showing, setShowing ] = useState(false);
   const [ recoveryCodes, setRecoveryCodes ] = useState([]);
+  const [ regenerating, setRegenerating ] = useState(false);
 
   const confirmationForm = useForm({ code: '' });
 
@@ -24,12 +27,12 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
     [enabling, user]
   );
 
-  useEffect((twoFactorEnabled) => {
+  useEffect(() => {
     if (!twoFactorEnabled) {
       confirmationForm.reset();
       confirmationForm.clearErrors();
     }
-  }, []);
+  }, [twoFactorEnabled]);
 
   const enableTwoFactorAuthentication = () => {
     setEnabling(true);
@@ -43,7 +46,7 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
       ]),
       onFinish: () => {
         setEnabling(false);
-        setConfirming(requiresConfirmation);
+        setConfirmationRequired(requiresConfirmation);
       },
     });
   };
@@ -61,28 +64,40 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
   }
 
   const showRecoveryCodes = () => {
+    setShowing(true);
+
     return axios.get(route('two-factor.recovery-codes')).then(response => {
       setRecoveryCodes(response.data);
+      setShowing(false);
     });
   };
 
+  const handleOnChange = e => confirmationForm.setData(e.target.id, e.target.value);
+  const handleKeyUp = e => e.key === 'Enter' && confirmTwoFactorAuthentication();
+
   const confirmTwoFactorAuthentication = () => {
+    setConfirming(true);
+
     confirmationForm.post(route('two-factor.confirm'), {
       errorBag: "confirmTwoFactorAuthentication",
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
-        setConfirming(false);
+        setConfirmationRequired(false);
         setQrCode(null);
         setSetupKey(null);
       },
+      onFinish: () => setConfirming(false)
     });
   };
 
   const regenerateRecoveryCodes = () => {
-    axios
-      .post(route('two-factor.recovery-codes'))
-      .then(() => showRecoveryCodes());
+    setRegenerating(true);
+
+    return axios.post(route('two-factor.recovery-codes')).then(() => {
+      showRecoveryCodes();
+      setRegenerating(false);
+    });
   };
 
   const disableTwoFactorAuthentication = () => {
@@ -90,20 +105,25 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
 
     router.delete(route('two-factor.disable'), {
       preserveScroll: true,
-      onSuccess: () => {
-        setDisabling(false);
-        setConfirming(false);
-      },
+      onSuccess: () => setConfirmationRequired(false),
+      onFinish: () => setDisabling(false),
     });
   };
+
+  const ConfirmButton = withPasswordConfirmation(PrimaryButton, confirmTwoFactorAuthentication);
+  const CancelButton = withPasswordConfirmation(SecondaryButton, disableTwoFactorAuthentication);
+  const ShowRecButton = withPasswordConfirmation(SecondaryButton, showRecoveryCodes);
+  const RegenButton = withPasswordConfirmation(SecondaryButton, regenerateRecoveryCodes);
+  const DisableButton = withPasswordConfirmation(DangerButton, disableTwoFactorAuthentication);
+  const EnableButton = withPasswordConfirmation(PrimaryButton, enableTwoFactorAuthentication);
 
   return <ActionSection
     title="Two Factor Authentication"
     description="Add additional security to your account using two factor authentication."
   >
     <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-      {twoFactorEnabled && !confirming
-        ? 'You have enabled two factor authentication.' : (twoFactorEnabled && confirming
+      {twoFactorEnabled && !confirmationRequired
+        ? 'You have enabled two factor authentication.' : (twoFactorEnabled && confirmationRequired
         ? 'Finish enabling two factor authentication.'
         : 'You have not enabled two factor authentication.')
       }
@@ -121,17 +141,16 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
         {qrCode && setupKey &&
           <>
             <div className="mt-4 max-w-xl text-sm text-gray-600 dark:text-gray-400">
-              {confirming
-                ?
-                  <p className="font-semibold">
-                    To finish enabling two factor authentication, scan the following QR code using your phone's
-                    authenticator application or enter the setup key and provide the generated OTP code.
-                  </p>
-                :
-                  <p>
-                    Two factor authentication is now enabled. Scan the following QR code using your phone's authenticator
-                    application or enter the setup key.
-                  </p>
+              {confirmationRequired ?
+                <p className="font-semibold">
+                  To finish enabling two factor authentication, scan the following QR code using your phone's
+                  authenticator application or enter the setup key and provide the generated OTP code.
+                </p>
+              :
+                <p>
+                  Two factor authentication is now enabled. Scan the following QR code using your phone's authenticator
+                  application or enter the setup key.
+                </p>
               }
             </div>
 
@@ -143,30 +162,30 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
               </p>
             </div>
 
-            {confirming &&
+            {confirmationRequired &&
               <div className="mt-4">
                 <InputLabel for="code" value="Code" />
 
                 <TextInput
                   id="code"
                   value={confirmationForm.data.code}
-                  onChange={(e) => confirmationForm.setData('code', e.target.value)}
+                  onChange={handleOnChange}
                   type="text"
                   name="code"
                   className="block mt-1 w-1/2"
                   inputMode="numeric"
                   autoFocus
                   autoComplete="one-time-code"
-                  onKeyUp={(e) => e.key === 'Enter' && confirmTwoFactorAuthentication}
+                  onKeyUp={handleKeyUp}
                 />
 
-                <InputError message={confirmationForm.errors.code} class="mt-2" />
+                <InputError message={confirmationForm.errors.code} className="mt-2" />
               </div>
             }
           </>
         }
 
-        {recoveryCodes.length > 0 && !confirming &&
+        {recoveryCodes.length > 0 && !confirmationRequired &&
           <>
             <div className="mt-4 max-w-xl text-sm text-gray-600 dark:text-gray-400">
               <p className="font-semibold">
@@ -176,7 +195,7 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
             </div>
 
             <div className="grid gap-1 max-w-xl mt-4 px-4 py-4 font-mono text-sm bg-gray-100 dark:bg-gray-900 dark:text-gray-100 rounded-lg">
-              {recoveryCodes.map((code) =>
+              {recoveryCodes.map(code =>
                 <div key={code}>
                   {code}
                 </div>
@@ -188,61 +207,46 @@ const TwoFactorAuthenticationForm = ({requiresConfirmation, user}) => {
     }
 
     <div className="mt-5">
-      {twoFactorEnabled
-        ?
-          <>
-            {confirming &&
-              <>
-                <ConfirmsPassword onConfirmed={confirmTwoFactorAuthentication}>
-                  <PrimaryButton
-                    type="button"
-                    className="me-3"
-                    disabled={enabling}
-                  >
-                    Confirm
-                  </PrimaryButton>
-                </ConfirmsPassword>
+      {twoFactorEnabled ?
+        <>
+          {confirmationRequired ?
+            <>
+              <ConfirmButton
+                type="button"
+                className="me-3"
+                disabled={confirming}
+              >
+                Confirm
+              </ConfirmButton>
 
-                <ConfirmsPassword onConfirmed={disableTwoFactorAuthentication}>
-                  <SecondaryButton disabled={disabling}>
-                    Cancel
-                  </SecondaryButton>
-                </ConfirmsPassword>
-              </>
-            }
+              <CancelButton disabled={disabling}>
+                Cancel
+              </CancelButton>
+            </>
+          :
+            <>
+              {recoveryCodes.length === 0 &&
+                <ShowRecButton className="me-3" disabled={showing}>
+                  Show Recovery Codes
+                </ShowRecButton>
+              }
 
-            {!confirming &&
-              <>
-                {recoveryCodes.length === 0 &&
-                  <ConfirmsPassword onConfirmed={showRecoveryCodes}>
-                    <SecondaryButton className="me-3">
-                      Show Recovery Codes
-                    </SecondaryButton>
-                  </ConfirmsPassword>
-                }
+              {recoveryCodes.length > 0 &&
+                <RegenButton className="me-3" disabled={regenerating}>
+                  Regenerate Recovery Codes
+                </RegenButton>
+              }
 
-                {recoveryCodes.length > 0 &&
-                  <ConfirmsPassword onConfirmed={regenerateRecoveryCodes}>
-                    <SecondaryButton className="me-3">
-                      Regenerate Recovery Codes
-                    </SecondaryButton>
-                  </ConfirmsPassword>
-                }
-
-                <ConfirmsPassword onConfirmed={disableTwoFactorAuthentication}>
-                  <DangerButton disabled={disabling}>
-                    Disable
-                  </DangerButton>
-                </ConfirmsPassword>
-              </>
-            }
-          </>
-        :
-          <ConfirmsPassword onConfirmed={enableTwoFactorAuthentication}>
-            <PrimaryButton disabled={enabling}>
-              Enable
-            </PrimaryButton>
-          </ConfirmsPassword>
+              <DisableButton disabled={disabling}>
+                Disable
+              </DisableButton>
+            </>
+          }
+        </>
+      :
+        <EnableButton type="button" disabled={enabling}>
+          Enable
+        </EnableButton>
       }
     </div>
   </ActionSection>;

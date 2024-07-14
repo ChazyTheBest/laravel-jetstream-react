@@ -17,6 +17,14 @@ const DeleteUserForm = () => {
     setTimeout(() => passwordInput.current.focus(), 250);
   };
 
+  const closeModal = () => {
+    setConfirmingUserDeletion(false);
+    form.reset();
+  };
+
+  const handleOnChange = e => form.setData(e.target.id, e.target.value);
+  const handleOnKeyUp = e => e.key === 'Enter' && deleteUser();
+
   const deleteUser = () =>
     form.delete(route('current-user.destroy'), {
       preserveScroll: true,
@@ -24,8 +32,6 @@ const DeleteUserForm = () => {
       onError: () => passwordInput.current.focus(),
       onFinish: form.reset,
     });
-
-  const closeModal = () => setConfirmingUserDeletion(false) && form.reset();
 
   return <ActionSection
     title="Delete Account"
@@ -54,17 +60,18 @@ const DeleteUserForm = () => {
 
           <div className="mt-4">
             <TextInput
+              id="password"
               ref={passwordInput}
               value={form.data.password}
-              onChange={e => form.setData('password', e.target.value)}
+              onChange={handleOnChange}
               type="password"
               className="mt-1 block w-3/4"
               placeholder="Password"
               autoComplete="current-password"
-              onKeyUp={e => e.key === 'Enter' && deleteUser()}
+              onKeyUp={handleOnKeyUp}
             />
 
-            <InputError message={form.errors.password} className="mt-2"/>
+            <InputError message={form.errors.password} className="mt-2" />
           </div>
         </>,
         footer: <>
