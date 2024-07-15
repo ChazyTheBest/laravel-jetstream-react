@@ -1,6 +1,6 @@
 import { useTheme } from "@/contexts";
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/20/solid';
-import Theme from "@/theme";
+import ThemeManager from "@/theme";
 import Dropdown from "@/Components/Dropdown";
 import DropdownLink from "@/Components/DropdownLink";
 
@@ -10,9 +10,9 @@ const ThemesDropdown = () => {
   const isActive = checkedTheme => theme === checkedTheme ? ' text-sky-400' : '';
 
   const iconMap = {
-    [Theme.LIGHT]: <SunIcon className={`size-6${isActive(Theme.LIGHT)}`} aria-hidden="true" />,
-    [Theme.DARK]: <MoonIcon className={`size-6${isActive(Theme.DARK)}`} aria-hidden="true" />,
-    [Theme.SYSTEM]: Theme.prefersDarkScheme
+    [ThemeManager.LIGHT]: <SunIcon className={`size-6${isActive(ThemeManager.LIGHT)}`} aria-hidden="true" />,
+    [ThemeManager.DARK]: <MoonIcon className={`size-6${isActive(ThemeManager.DARK)}`} aria-hidden="true" />,
+    [ThemeManager.SYSTEM]: ThemeManager.prefersDarkScheme
                       ? <MoonIcon className="size-6" aria-hidden="true" />
                       : <SunIcon className="size-6" aria-hidden="true" />,
   };
@@ -33,22 +33,22 @@ const ThemesDropdown = () => {
       Switch Themes
     </div>
 
-    <DropdownLink as="button" onClick={changeThemeTo(Theme.LIGHT)}>
-      <div className={`flex items-start${isActive(Theme.LIGHT)}`}>
+    <DropdownLink as="button" onClick={changeThemeTo(ThemeManager.LIGHT)}>
+      <div className={`flex items-start${isActive(ThemeManager.LIGHT)}`}>
         <SunIcon className="size-5" aria-hidden="true"/>
         <span className="ms-2">Light</span>
       </div>
     </DropdownLink>
 
-    <DropdownLink as="button" onClick={changeThemeTo(Theme.DARK)}>
-      <div className={`flex items-start${isActive(Theme.DARK)}`}>
+    <DropdownLink as="button" onClick={changeThemeTo(ThemeManager.DARK)}>
+      <div className={`flex items-start${isActive(ThemeManager.DARK)}`}>
         <MoonIcon className="size-5" aria-hidden="true"/>
         <span className="ms-2">Dark</span>
       </div>
     </DropdownLink>
 
-    <DropdownLink as="button" onClick={changeThemeTo(Theme.SYSTEM)}>
-      <div className={`flex items-start${isActive(Theme.SYSTEM)}`}>
+    <DropdownLink as="button" onClick={changeThemeTo(ThemeManager.SYSTEM)}>
+      <div className={`flex items-start${isActive(ThemeManager.SYSTEM)}`}>
         <ComputerDesktopIcon className="size-5" aria-hidden="true"/>
         <span className="ms-2">System</span>
       </div>

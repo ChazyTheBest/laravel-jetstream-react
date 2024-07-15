@@ -1,4 +1,4 @@
-const Theme = Object.freeze({
+const ThemeManager = Object.freeze({
     LIGHT: 'light',
     DARK: 'dark',
     SYSTEM: 'system',
@@ -33,4 +33,4 @@ const Theme = Object.freeze({
     }
 });
 
-export default Theme;
+export default ThemeManager;

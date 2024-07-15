@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
 import { ThemeContext } from "@/contexts";
-import Theme from "@/theme";
+import ThemeManager from "@/theme";
 
 const ThemeProvider = ({ children }) => {
-  const [ theme, setTheme ] = useState(localStorage.getItem('theme') || Theme.SYSTEM);
+  const [ theme, setTheme ] = useState(localStorage.getItem('theme') || ThemeManager.SYSTEM);
 
   useEffect(() => {
     const localStorageTheme = localStorage.getItem('theme');
 
-    if (localStorageTheme === Theme.LIGHT) {
-      Theme.setToLight(setTheme)(false);
-    } else if (localStorageTheme === Theme.DARK) {
-      Theme.setToDark(setTheme)(false);
+    if (localStorageTheme === ThemeManager.LIGHT) {
+      ThemeManager.setToLight(setTheme)(false);
+    } else if (localStorageTheme === ThemeManager.DARK) {
+      ThemeManager.setToDark(setTheme)(false);
     } else {
-      Theme.setToSystem(setTheme)(false);
+      ThemeManager.setToSystem(setTheme)(false);
     }
   }, []);
 
   const changeThemeTo = (newTheme) => {
-    if (newTheme === Theme.LIGHT) {
-      return Theme.setToLight(setTheme);
-    } else if (newTheme === Theme.DARK) {
-      return Theme.setToDark(setTheme);
+    if (newTheme === ThemeManager.LIGHT) {
+      return ThemeManager.setToLight(setTheme);
+    } else if (newTheme === ThemeManager.DARK) {
+      return ThemeManager.setToDark(setTheme);
     } else {
-      return Theme.setToSystem(setTheme);
+      return ThemeManager.setToSystem(setTheme);
     }
   };
 
