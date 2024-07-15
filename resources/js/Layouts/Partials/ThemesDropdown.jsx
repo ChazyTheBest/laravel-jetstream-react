@@ -1,59 +1,13 @@
-import { useEffect, useState } from "react";
+import { useTheme } from "@/contexts";
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/20/solid';
+import Theme from "@/theme";
 import Dropdown from "@/Components/Dropdown";
 import DropdownLink from "@/Components/DropdownLink";
 
-const Theme = Object.freeze({
-  LIGHT: 'light',
-  DARK: 'dark',
-  SYSTEM: 'system',
-
-  docClasses: document.documentElement.classList,
-  prefersDarkScheme: window.matchMedia('(prefers-color-scheme: dark)').matches,
-
-  setToLight(setTheme) {
-    return (store = true) => {
-      setTheme(this.LIGHT);
-      store && localStorage.setItem('theme', this.LIGHT);
-      this.docClasses.contains(this.DARK) && this.docClasses.remove(this.DARK);
-    };
-  },
-
-  setToDark(setTheme) {
-    return (store = true) => {
-      setTheme(this.DARK);
-      store && localStorage.setItem('theme', this.DARK);
-      !this.docClasses.contains(this.DARK) && this.docClasses.add(this.DARK);
-    };
-  },
-
-  setToSystem(setTheme) {
-    return (remove = true) => {
-      setTheme(this.SYSTEM);
-      remove && localStorage.removeItem('theme');
-      this.prefersDarkScheme
-        ? !this.docClasses.contains(this.DARK) && this.docClasses.add(this.DARK)
-        : this.docClasses.contains(this.DARK) && this.docClasses.remove(this.DARK);
-    };
-  }
-});
-
 const ThemesDropdown = () => {
-  const [ theme, setTheme ] = useState(Theme.SYSTEM);
+  const { theme, changeThemeTo } = useTheme();
 
-  useEffect(() => {
-    const localStorageTheme = localStorage.getItem('theme');
-
-    if (localStorageTheme === Theme.LIGHT) {
-      Theme.setToLight(setTheme)(false);
-    } else if (localStorageTheme === Theme.DARK) {
-      Theme.setToDark(setTheme)(false);
-    } else {
-      Theme.setToSystem(setTheme)(false);
-    }
-  }, []);
-
-  const isActive = (currentTheme) => theme === currentTheme ? ' text-sky-400' : '';
+  const isActive = checkedTheme => theme === checkedTheme ? ' text-sky-400' : '';
 
   const iconMap = {
     [Theme.LIGHT]: <SunIcon className={`size-6${isActive(Theme.LIGHT)}`} aria-hidden="true" />,
@@ -79,21 +33,21 @@ const ThemesDropdown = () => {
       Switch Themes
     </div>
 
-    <DropdownLink as="button" onClick={Theme.setToLight(setTheme)}>
+    <DropdownLink as="button" onClick={changeThemeTo(Theme.LIGHT)}>
       <div className={`flex items-start${isActive(Theme.LIGHT)}`}>
         <SunIcon className="size-5" aria-hidden="true"/>
         <span className="ms-2">Light</span>
       </div>
     </DropdownLink>
 
-    <DropdownLink as="button" onClick={Theme.setToDark(setTheme)}>
+    <DropdownLink as="button" onClick={changeThemeTo(Theme.DARK)}>
       <div className={`flex items-start${isActive(Theme.DARK)}`}>
         <MoonIcon className="size-5" aria-hidden="true"/>
         <span className="ms-2">Dark</span>
       </div>
     </DropdownLink>
 
-    <DropdownLink as="button" onClick={Theme.setToSystem(setTheme)}>
+    <DropdownLink as="button" onClick={changeThemeTo(Theme.SYSTEM)}>
       <div className={`flex items-start${isActive(Theme.SYSTEM)}`}>
         <ComputerDesktopIcon className="size-5" aria-hidden="true"/>
         <span className="ms-2">System</span>
